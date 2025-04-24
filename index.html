@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K Medical Store Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .logo { text-shadow: 1px 1px 3px rgba(0,0,0,0.2); }
+        .rack-item:hover { transform: scale(1.02); transition: all 0.3s ease; }
+        .medicine-item:hover { background-color: #f0fdf4; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="flex items-center justify-center h-10 w-10 rounded-full bg-green-600 text-white">
+                    <div class="text-2xl font-bold logo">K</div>
+                </div>
+                <div class="ml-2 text-xl font-semibold text-gray-700">Medical Store</div>
+            </div>
+            <nav>
+                <button id="addMedicineBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                    <i class="bi bi-plus-lg"></i> Add Medicine
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Search Section -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <div class="flex flex-col md:flex-row gap-4">
+                <input type="text" id="searchInput" placeholder="Search medicines, compositions, or dosages..." 
+                       class="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                <button class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Rack Management -->
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">Rack Management</h2>
+                    <button id="addRackBtn" class="text-green-600 hover:text-green-700">
+                        <i class="bi bi-plus-circle"></i> New Rack
+                    </button>
+                </div>
+                <div id="rackContainer" class="grid grid-cols-2 gap-4">
+                    <div class="rack-item bg-gray-50 p-4 rounded-lg cursor-pointer" data-rack="1">
+                        <h3 class="font-medium">Rack 1</h3>
+                        <div class="text-sm text-gray-600">Sub-racks: A, B, C, D</div>
+                    </div>
+                    <div class="rack-item bg-gray-50 p-4 rounded-lg cursor-pointer" data-rack="2">
+                        <h3 class="font-medium">Rack 2</h3>
+                        <div class="text-sm text-gray-600">Sub-racks: A, B, C, D</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medicine Details -->
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <h2 class="text-xl font-semibold mb-4">Medicine Details</h2>
+                <div id="medicineDetailsContainer" class="space-y-4">
+                    <!-- Medicine details will be loaded here -->
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <h3 class="font-medium">Dolo 650</h3>
+                        <div class="text-sm text-gray-600">
+                            <p>Composition: Paracetamol</p>
+                            <p>Strength: 650mg</p>
+                            <p>Category: Painkiller</p>
+                            <p>Location: Rack 1, Sub-rack A</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Out of Stock -->
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <h2 class="text-xl font-semibold mb-4">Out of Stock</h2>
+                <ul id="outOfStockList" class="space-y-2">
+                    <li class="flex justify-between items-center p-2 bg-red-50 rounded">
+                        <span>Crocin</span>
+                        <button class="text-green-600 hover:text-green-700">
+                            <i class="bi bi-plus-circle"></i> Add to Order
+                        </button>
+                    </li>
+                    <li class="flex justify-between items-center p-2 bg-red-50 rounded">
+                        <span>Azithromycin</span>
+                        <button class="text-green-600 hover:text-green-700">
+                            <i class="bi bi-plus-circle"></i> Add to Order
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Rack Contents Section (appears when a rack is clicked) -->
+        <div id="rackContentsSection" class="mt-8 bg-white rounded-lg shadow-sm p-6 hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="rackTitle" class="text-xl font-semibold">Rack 1 Contents</h2>
+                <button id="addToRackBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                    <i class="bi bi-plus-lg"></i> Add to Rack
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <h3 class="font-medium">Sub-rack A</h3>
+                    <div id="subrackA" class="mt-2 space-y-2">
+                        <div class="medicine-item p-2 bg-white rounded border border-gray-100 text-sm">
+                            <div class="font-medium">Dolo 650</div>
+                            <div class="text-xs text-gray-500">Paracetamol 650mg</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <h3 class="font-medium">Sub-rack B</h3>
+                    <div id="subrackB" class="mt-2 space-y-2">
+                        <div class="medicine-item p-2 bg-white rounded border border-gray-100 text-sm">
+                            <div class="font-medium">Montair LC</div>
+                            <div class="text-xs text-gray-500">Montelukast 10mg</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <h3 class="font-medium">Sub-rack C</h3>
+                    <div id="subrackC" class="mt-2 space-y-2"></div>
+                </div>
+                <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <h3 class="font-medium">Sub-rack D</h3>
+                    <div id="subrackD" class="mt-2 space-y-2"></div>
+                </div>
+            </div>
+            
+            <button id="closeRackView" class="text-gray-600 hover:text-gray-800">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </button>
+        </div>
+    </main>
+
+    <!-- Add Medicine Modal -->
+    <div id="addMedicineModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 class="text-xl font-semibold mb-4">Add New Medicine</h2>
+            <form id="addMedicineForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Medicine Name</label>
+                    <input type="text" name="medicineName" placeholder="e.g. Dolo 650" class="w-full p-2 border rounded focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Composition</label>
+                    <input type="text" name="composition" placeholder="e.g. Paracetamol" class="w-full p-2 border rounded focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Strength/Dosage</label>
+                    <input type="text" name="strength" placeholder="e.g. 650mg" class="w-full p-2 border rounded focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                    <select name="category" class="w-full p-2 border rounded focus:ring-green-500 focus:border-green-500">
+                        <option value="">Select Category</option>
+                        <option value="Painkiller">Painkiller</option>
+                        <option value="Antibiotic">Antibiotic</option>
+                        <option value="Antacid">Antacid</option>
+                        <option value="Antihistamine">Antihistamine</option>
+                        <option value="Vitamin">Vitamin</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Rack Location</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <select name="rackNumber" class="p-2 border rounded focus:ring-green-500 focus:border-green-500">
+                            <option value="">Select Rack</option>
+                            <option value="1">Rack 1</option>
+                            <option value="2">Rack 2</option>
+                        </select>
+                        <select name="subRack" class="p-2 border rounded focus:ring-green-500 focus:border-green-500">
+                            <option value="">Select Sub-Rack</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-4">
+                    <button type="button" id="closeModal" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add to Rack Modal -->
+    <div id="addToRackModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 class="text-xl font-semibold mb-4">Add Medicine to Rack</h2>
+            <form id="addToRackForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Select Medicine</label>
+                    <select name="medicineSelect" class="w-full p-2 border rounded focus:ring-green-500 focus:border-green-500">
+                        <option value="">Select Medicine</option>
+                        <option value="Crocin">Crocin</option>
+                        <option value="Azithromycin">Azithromycin</option>
+                        <option value="Pantop">Pantop</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Select Sub-Rack</label>
+                    <select name="subrackSelect" class="w-full p-2 border rounded focus:ring-green-500 focus:border-green-500">
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-4">
+                    <button type="button" id="closeRackModal" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Rack Modal -->
+    <div id="addRackModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 class="text-xl font-semibold mb-4">Add New Rack</h2>
+            <form id="addRackForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Rack Number</label>
+                    <input type="number" name="rackNumber" min="1" max="50" placeholder="Enter rack number" class="w-full p-2 border rounded focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div class="flex justify-end gap-4">
+                    <button type="button" id="closeRackFormModal" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Add Rack</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Data structure for medicines
+        let medicines = [
+            {
+                name: "Dolo 650",
+                composition: "Paracetamol",
+                strength: "650mg",
+                category: "Painkiller",
+                rack: 1,
+                subRack: "A"
+            },
+            {
+                name: "Montair LC",
+                composition: "Montelukast",
+                strength: "10mg",
+                category: "Antiallergic",
+                rack: 1,
+                subRack: "B"
+            }
+        ];
+
+        // Data structure for racks
+        let racks = [
+            { number: 1, subRacks: ["A", "B", "C", "D"] },
+            { number: 2, subRacks: ["A", "B", "C", "D"] }
+        ];
+
+        // DOM elements
+        const addMedicineModal = document.getElementById('addMedicineModal');
+        const addMedicineBtn = document.getElementById('addMedicineBtn');
+        const closeModal = document.getElementById('closeModal');
+        const addMedicineForm = document.getElementById('addMedicineForm');
+        const searchInput = document.getElementById('searchInput');
+        
+        const rackContentsSection = document.getElementById('rackContentsSection');
+        const rackTitle = document.getElementById('rackTitle');
+        const closeRackView = document.getElementById('closeRackView');
+        
+        const addToRackBtn = document.getElementById('addToRackBtn');
+        const addToRackModal = document.getElementById('addToRackModal');
+        const closeRackModal = document.getElementById('closeRackModal');
+        const addToRackForm = document.getElementById('addToRackForm');
+
+        const rackContainer = document.getElementById('rackContainer');
+        const addRackBtn = document.getElementById('addRackBtn');
+        const addRackModal = document.getElementById('addRackModal');
+        const closeRackFormModal = document.getElementById('closeRackFormModal');
+        const addRackForm = document.getElementById('addRackForm');
+        
+        // Current rack being viewed
+        let currentRack = null;
+
+        // Add Medicine Modal
+        addMedicineBtn.addEventListener('click', () => {
+            addMedicineModal.classList.remove('hidden');
+        });
+
+        closeModal.addEventListener('click', () => {
+            addMedicineModal.classList.add('hidden');
+        });
+
+        addMedicineModal.addEventListener('click', (e) => {
+            if (e.target === addMedicineModal) {
+                addMedicineModal.classList.add('hidden');
+            }
+        });
+
+        // Add Medicine Form Submission
+        addMedicineForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(addMedicineForm);
+            const newMedicine = {
+                name: formData.get('medicineName'),
+                composition: formData.get('composition'),
+                strength: formData.get('strength'),
+                category: formData.get('category'),
+                rack: parseInt(formData.get('rackNumber')),
+                subRack: formData.get('subRack')
+            };
+            
+            medicines.push(newMedicine);
+            updateMedicineDisplay();
+            
+            // If currently viewing the rack where medicine was added, update that view
+            if (currentRack === newMedicine.rack) {
+                updateRackContents(currentRack);
+            }
+            
+            addMedicineModal.classList.add('hidden');
+            addMedicineForm.reset();
+        });
+
+        // Rack click functionality
+        document.querySelectorAll('.rack-item').forEach(rack => {
+            rack.addEventListener('click', () => {
+                const rackNumber = parseInt(rack.dataset.rack);
+                showRackContents(rackNumber);
+            });
+        });
+
+        function showRackContents(rackNumber) {
+            currentRack = rackNumber;
+            rackTitle.textContent = `Rack ${rackNumber} Contents`;
+            updateRackContents(rackNumber);
+            rackContentsSection.classList.remove('hidden');
+        }
+
+        function updateRackContents(rackNumber) {
+            const subracks = ['A', 'B', 'C', 'D'];
+            
+            subracks.forEach(subrack => {
+                const subrackEl = document.getElementById(`subrack${subrack}`);
+                subrackEl.innerHTML = '';
+                
+                // Filter medicines for this rack and subrack
+                const subrackMedicines = medicines.filter(med => 
+                    med.rack === rackNumber && med.subRack === subrack
+                );
+                
+                if (subrackMedicines.length === 0) {
+                    subrackEl.innerHTML = '<div class="text-xs text-gray-400">No medicines</div>';
+                } else {
+                    subrackMedicines.forEach(med => {
+                        const medItem = document.createElement('div');
+                        medItem.className = 'medicine-item p-2 bg-white rounded border border-gray-100 text-sm';
+                        medItem.innerHTML = `
+                            <div class="font-medium">${med.name}</div>
+                            <div class="text-xs text-gray-500">${med.composition} ${med.strength}</div>
+                        `;
+                        subrackEl.appendChild(medItem);
+                    });
+                }
+            });
+        }
+
+        closeRackView.addEventListener('click', () => {
+            rackContentsSection.classList.add('hidden');
+            currentRack = null;
+        });
+
+        // Add to Rack functionality
+        addToRackBtn.addEventListener('click', () => {
+            addToRackModal.classList.remove('hidden');
+        });
+
+        closeRackModal.addEventListener('click', () => {
+            addToRackModal.classList.add('hidden');
+        });
+
+        addToRackModal.addEventListener('click', (e) => {
+            if (e.target === addToRackModal) {
+                addToRackModal.classList.add('hidden');
+            }
+        });
+
+        addToRackForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(addToRackForm);
+            const medicineName = formData.get('medicineSelect');
+            const subRack = formData.get('subrackSelect');
+            
+            // Check if the medicine exists in out-of-stock list
+            // In a real app, you'd have a more sophisticated data structure
+            const newMedicine = {
+                name: medicineName,
+                composition: medicineName === "Crocin" ? "Paracetamol" : 
+                            medicineName === "Azithromycin" ? "Azithromycin" : "Pantoprazole",
+                strength: medicineName === "Crocin" ? "500mg" : 
+                         medicineName === "Azithromycin" ? "250mg" : "40mg",
+                category: medicineName === "Crocin" ? "Painkiller" : 
+                         medicineName === "Azithromycin" ? "Antibiotic" : "Antacid",
+                rack: currentRack,
+                subRack: subRack
+            };
+            
+            medicines.push(newMedicine);
+            
+            // Remove from out-of-stock list
+            const outOfStockList = document.getElementById('outOfStockList');
+            const items = outOfStockList.querySelectorAll('li');
+            items.forEach(item => {
+                if (item.querySelector('span').textContent === medicineName) {
+                    item.remove();
+                }
+            });
+            
+            updateRackContents(currentRack);
+            addToRackModal.classList.add('hidden');
+        });
+
+        // Add Rack functionality
+        addRackBtn.addEventListener('click', () => {
+            addRackModal.classList.remove('hidden');
+        });
+
+        closeRackFormModal.addEventListener('click', () => {
+            addRackModal.classList.add('hidden');
+        });
+
+        addRackModal.addEventListener('click', (e) => {
+            if (e.target === addRackModal) {
+                addRackModal.classList.add('hidden');
+            }
+        });
+
+        addRackForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(addRackForm);
+            const rackNumber = parseInt(formData.get('rackNumber'));
+            
+            // Check if rack already exists
+            if (racks.some(rack => rack.number === rackNumber)) {
+                alert('Rack already exists!');
+                return;
+            }
+            
+            // Add new rack
+            racks.push({ number: rackNumber, subRacks: ["A", "B", "C", "D"] });
+            updateRackDisplay();
+            
+            addRackModal.classList.add('hidden');
+            addRackForm.reset();
+        });
+
+        function updateRackDisplay() {
+            rackContainer.innerHTML = '';
+            
+            racks.forEach(rack => {
+                const rackEl = document.createElement('div');
+                rackEl.className = 'rack-item bg-gray-50 p-4 rounded-lg cursor-pointer';
+                rackEl.dataset.rack = rack.number;
+                rackEl.innerHTML = `
+                    <h3 class="font-medium">Rack ${rack.number}</h3>
+                    <div class="text-sm text-gray-600">Sub-racks: ${rack.subRacks.join(', ')}</div>
+                `;
+                rackEl.addEventListener('click', () => {
+                    showRackContents(rack.number);
+                });
+                rackContainer.appendChild(rackEl);
+            });
+        }
+
+        function updateMedicineDisplay() {
+            const container = document.getElementById('medicineDetailsContainer');
+            container.innerHTML = '';
+            
+            medicines.forEach(med => {
+                const medDiv = document.createElement('div');
+                medDiv.className = 'p-4 bg-gray-50 rounded-lg';
+                medDiv.innerHTML = `
+                    <h3 class="font-medium">${med.name}</h3>
+                    <div class="text-sm text-gray-600">
+                        <p>Composition: ${med.composition}</p>
+                        <p>Strength: ${med.strength}</p>
+                        <p>Category: ${med.category}</p>
+                        <p>Location: Rack ${med.rack}, Sub-rack ${med.subRack}</p>
+                    </div>
+                `;
+                container.appendChild(medDiv);
+            });
+        }
+
+        // Search functionality
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const container = document.getElementById('medicineDetailsContainer');
+            container.innerHTML = '';
+            
+            if (!searchTerm) {
+                updateMedicineDisplay();
+                return;
+            }
+            
+            const filteredMeds = medicines.filter(med => 
+                med.name.toLowerCase().includes(searchTerm) || 
+                med.composition.toLowerCase().includes(searchTerm) ||
+                med.strength.toLowerCase().includes(searchTerm) ||
+                med.category.toLowerCase().includes(searchTerm)
+            );
+            
+            if (filteredMeds.length === 0) {
+                container.innerHTML = '<div class="p-4 bg-gray-50 rounded-lg text-center">No medicines found</div>';
+            } else {
+                filteredMeds.forEach(med => {
+                    const medDiv = document.createElement('div');
+                    medDiv.className = 'p-4 bg-gray-50 rounded-lg';
+                    medDiv.innerHTML = `
+                        <h3 class="font-medium">${med.name}</h3>
+                        <div class="text-sm text-gray-600">
+                            <p>Composition: ${med.composition}</p>
+                            <p>Strength: ${med.strength}</p>
+                            <p>Category: ${med.category}</p>
+                            <p>Location: Rack ${med.rack}, Sub-rack ${med.subRack}</p>
+                        </div>
+                    `;
+                    container.appendChild(medDiv);
+                });
+            }
+        });
+
+        // Initialize displays
+        updateRackDisplay();
+        updateMedicineDisplay();
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
